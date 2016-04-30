@@ -1,12 +1,19 @@
-use id::{Id};
-use components::{Transform, Renderable};
+use std::sync::{Arc};
 
-pub trait Entity : Send + Sync {
+use id::{Id, IdManager};
+use components::{Transform, Renderable};
+use world::{World};
+
+pub trait Entity<T: Entity<T>> : Send + Sync {
     fn get_id(&self) -> Id;
     fn get_renderable(&self) -> Option<&Renderable>;
     fn get_transform(&self) -> Option<&Transform>;
     fn get_mut_renderable(&mut self) -> Option<&mut Renderable>;
     fn get_mut_transform(&mut self) -> Option<&mut Transform>;
+    fn tick(&self, dt: f64, world: Arc<World<T>>);
+    fn tick_mut(&mut self, manager: &mut IdManager, world: &mut World<T>);
+    fn is_tick(&self) -> bool;
+    fn is_tick_mut(&self) -> bool;
 }
 
 #[macro_export]
@@ -35,31 +42,29 @@ macro_rules! impl_component_with_entity {
 #[macro_export]
 macro_rules! impl_entity {
     ($t: ident, $id: ident, $r: ident, $tr: ident) => (
-        impl Entity for $t {
-            #[inline]
-            fn get_id(&self) -> Id {
-                self.$id.clone()
-            }
+        #[inline]
+        fn get_id(&self) -> Id {
+            self.$id.clone()
+        }
 
-            #[inline]
-            fn get_renderable(&self) -> Option<&Renderable> {
-                self.$r.as_ref()
-            }
+        #[inline]
+        fn get_renderable(&self) -> Option<&Renderable> {
+            self.$r.as_ref()
+        }
 
-            #[inline]
-            fn get_transform(&self) -> Option<&Transform> {
-                self.$tr.as_ref()
-            }
+        #[inline]
+        fn get_transform(&self) -> Option<&Transform> {
+            self.$tr.as_ref()
+        }
 
-            #[inline]
-            fn get_mut_renderable(&mut self) -> Option<&mut Renderable> {
-                self.$r.as_mut()
-            }
+        #[inline]
+        fn get_mut_renderable(&mut self) -> Option<&mut Renderable> {
+            self.$r.as_mut()
+        }
 
-            #[inline]
-            fn get_mut_transform(&mut self) -> Option<&mut Transform> {
-                self.$tr.as_mut()
-            }
+        #[inline]
+        fn get_mut_transform(&mut self) -> Option<&mut Transform> {
+            self.$tr.as_mut()
         }
     )
 }
