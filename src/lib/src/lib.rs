@@ -15,5 +15,5 @@ mod components;
 pub use self::game::{Game};
 pub use self::entity::{Entity};
 pub use self::id::{Id, IdManager};
-pub use self::components::{Transform, Renderable, Map2d, Map3d};
+pub use self::components::{Transform, Renderable, Map2d, Map3d, Container};
 pub use self::world::{World};
