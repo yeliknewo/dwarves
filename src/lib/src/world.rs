@@ -8,6 +8,7 @@ use id::{Id};
 pub struct World<T: Entity<T>> {
     // entities: HashMap<Id, T, DefaultState<FnvHasher>>,
     entities: HashMap<Id, T>,
+    names: HashMap<&'static str, Id>,
     tick_ids: HashSet<Id>,
     tick_mut_ids: Option<HashSet<Id>>,
     render_ids: HashSet<Id>,
@@ -18,10 +19,36 @@ impl<T: Entity<T>> World<T> {
     pub fn new() -> World<T> {
         World {
             entities: HashMap::new(),
+            names: HashMap::new(),
             tick_ids: HashSet::new(),
             tick_mut_ids: Some(HashSet::new()),
             render_ids: HashSet::new(),
         }
+    }
+
+    #[inline]
+    pub fn register_name(&mut self, id: Id, name: &'static str) {
+        if !self.names.contains_key(name) {
+            self.names.insert(name, id);
+        } else {
+            panic!("Name already in use");
+        }
+    }
+
+    #[inline]
+    pub fn deregister_name(&mut self, name: &'static str) {
+        self.names.remove(name);
+    }
+
+    #[inline]
+    pub fn get_entity_by_name(&self, name: &'static str) -> Option<&T> {
+        self.get_entity_by_id(self.names.get(name).expect("Name was not found").clone())
+    }
+
+    #[inline]
+    pub fn get_mut_entity_by_name(&mut self, name: &'static str) -> Option<&mut T> {
+        let id = self.names.get(name).expect("Name was not found").clone();
+        self.get_mut_entity_by_id(id)
     }
 
     #[inline]
@@ -44,6 +71,11 @@ impl<T: Entity<T>> World<T> {
     #[inline]
     pub fn take_entity_by_id(&mut self, id: Id) -> Option<T> {
         self.entities.remove(&id)
+    }
+
+    #[inline]
+    pub fn take_entity_by_name(&mut self, name: &'static str) -> Option<T> {
+        self.entities.remove(self.names.get(name).expect("Name was not found"))
     }
 
     #[inline]
@@ -81,12 +113,13 @@ impl<T: Entity<T>> World<T> {
                 tick_mut_ids.insert(id.clone());
             }
         }
-        
+
         if render {
             self.render_ids.insert(id.clone());
         }
     }
 
+    #[inline]
     fn remove_event_ids(&mut self, id: Id) {
         self.tick_ids.remove(&id);
         if let Some(ref mut tick_mut_ids) = self.tick_mut_ids {

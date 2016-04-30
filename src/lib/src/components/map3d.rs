@@ -8,20 +8,33 @@ pub struct Map3d<T: Hash + Eq + Copy> {
 }
 
 impl<T: Hash + Eq + Copy> Map3d<T>{
+    #[inline]
     pub fn new() -> Map3d<T> {
         Map3d {
             tiles: HashMap::new(),
         }
     }
 
-    pub fn insert(&mut self, x: T, y: T, z: T, id: Id) {
-        self.tiles.insert((x, y, z), id);
+    #[inline]
+    pub fn insert(&mut self, coords: (T, T, T), id: Id) {
+        self.tiles.insert(coords, id);
     }
 
-    pub fn get(&self, x: T, y: T, z: T) -> Option<Id> {
-        match self.tiles.get(&(x, y, z)) {
+    #[inline]
+    pub fn insert_split(&mut self, x: T, y: T, z: T, id: Id) {
+        self.insert((x, y, z), id);
+    }
+
+    #[inline]
+    pub fn get(&self, coords: (T, T, T)) -> Option<Id> {
+        match self.tiles.get(&coords) {
             Some(id) => Some(id.clone()),
             None => None,
         }
+    }
+
+    #[inline]
+    pub fn get_split(&self, x: T, y: T, z: T) -> Option<Id> {
+        self.get((x,y,z))
     }
 }

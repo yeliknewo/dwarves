@@ -6,10 +6,10 @@ use world::{World};
 
 pub trait Entity<T: Entity<T>> : Send + Sync {
     fn get_id(&self) -> Id;
-    fn get_renderable(&self) -> Option<&Renderable>;
-    fn get_transform(&self) -> Option<&Transform>;
-    fn get_mut_renderable(&mut self) -> Option<&mut Renderable>;
-    fn get_mut_transform(&mut self) -> Option<&mut Transform>;
+    fn get_renderable(&self) -> Option<&Box<Renderable>>;
+    fn get_transform(&self) -> Option<&Box<Transform>>;
+    fn get_mut_renderable(&mut self) -> Option<&mut Box<Renderable>>;
+    fn get_mut_transform(&mut self) -> Option<&mut Box<Transform>>;
     fn tick(&self, dt: f64, world: Arc<World<T>>);
     fn tick_mut(&mut self, manager: &mut IdManager, world: &mut World<T>);
     fn is_tick(&self) -> bool;
@@ -18,22 +18,32 @@ pub trait Entity<T: Entity<T>> : Send + Sync {
 
 #[macro_export]
 macro_rules! impl_component_with_entity {
-    ($t: ident, $p: ident, $c: ident, $so: ident, $s: ident, $w: ident) => (
+    ($t: ident, $p: ident, $c: ident, $so: ident, $s: ident, $w: ident, $g: ident, $m: ident) => (
         impl $t {
             #[inline]
-            pub fn $so (&mut self, $p: Option<$c>) {
+            pub fn $so (&mut self, $p: Option<Box<$c>>) {
                 self.$p = $p;
             }
 
             #[inline]
             pub fn $s (&mut self, $p: $c) {
-                self.$so(Some($p));
+                self.$so(Some(Box::new($p)));
             }
 
             #[inline]
             pub fn $w (mut self, $p: $c) -> $t {
                 self.$s($p);
                 self
+            }
+
+            #[inline]
+            pub fn $g (&self) -> Option<&Box<$c>> {
+                self.$p.as_ref()
+            }
+
+            #[inline]
+            pub fn $m (&mut self) -> Option<&mut Box<$c>> {
+                self.$p.as_mut()
             }
         }
     )
@@ -48,22 +58,22 @@ macro_rules! impl_entity {
         }
 
         #[inline]
-        fn get_renderable(&self) -> Option<&Renderable> {
+        fn get_renderable(&self) -> Option<&Box<Renderable>> {
             self.$r.as_ref()
         }
 
         #[inline]
-        fn get_transform(&self) -> Option<&Transform> {
+        fn get_transform(&self) -> Option<&Box<Transform>> {
             self.$tr.as_ref()
         }
 
         #[inline]
-        fn get_mut_renderable(&mut self) -> Option<&mut Renderable> {
+        fn get_mut_renderable(&mut self) -> Option<&mut Box<Renderable>> {
             self.$r.as_mut()
         }
 
         #[inline]
-        fn get_mut_transform(&mut self) -> Option<&mut Transform> {
+        fn get_mut_transform(&mut self) -> Option<&mut Box<Transform>> {
             self.$tr.as_mut()
         }
     )

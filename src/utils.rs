@@ -6,3 +6,5 @@ pub type DWorld = World<DEntity>;
 pub type TileMap = Map2d<CoordSize>;
 pub type Coords = (u32, u32);
 pub type CoordSize = u32;
+
+pub static OVERSEER_NAME: &'static str = "Overseer";

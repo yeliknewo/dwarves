@@ -6,9 +6,10 @@ use lib_dwarves::*;
 mod dwarves_entity;
 mod utils;
 mod prefabs;
+mod components;
 
-use prefabs::{new_overseer, new_tile};
-use utils::{TileMap, DEntity};
+use prefabs::{new_overseer, new_tile, TileType};
+use utils::{DEntity};
 
 fn main() {
     let title = "Dwarves";
@@ -27,7 +28,7 @@ fn main() {
     {
         let mut world = game.get_mut_world();
         let overseer_id = {
-            let overseer = new_overseer(&mut manager);
+            let overseer = new_overseer(&mut manager, &mut world);
             let id = overseer.get_id();
             world.add_entity(overseer);
             id
@@ -35,7 +36,7 @@ fn main() {
         {
             for y in 0..5 {
                 for x in 0..5 {
-                    let tile = new_tile(&mut manager, x, y);
+                    let tile = new_tile(&mut manager, x, y, TileType::Grass);
                     world.add_entity(tile);
                 }
             }

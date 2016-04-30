@@ -13,6 +13,10 @@ impl Transform {
         }
     }
 
+    pub fn set_location(&mut self, location: (f64, f64)) {
+        self.location = location;
+    }
+
     pub fn get_location(&self) -> (f64, f64) {
         self.location
     }
