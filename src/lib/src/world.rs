@@ -43,6 +43,11 @@ impl<T: Entity<T>> World<T> {
     }
 
     #[inline]
+    pub fn get_active_layers(&self) -> &Vec<u8> {
+        &self.active_layers
+    }
+
+    #[inline]
     pub fn get_entity_by_name(&self, name: &'static str) -> Option<&T> {
         self.get_entity_by_id(self.names.get(name).expect("Name was not found").clone())
     }
@@ -108,7 +113,6 @@ impl<T: Entity<T>> World<T> {
                 render = true;
                 layer = renderable.get_layer();
             }
-            render = entity.get_renderable().is_some();
         }
 
         if tick {
@@ -122,13 +126,16 @@ impl<T: Entity<T>> World<T> {
         }
 
         if render {
-            if let Some(layer_set) = self.render_ids.get_mut(&layer) {
-                layer_set.insert(id.clone());
+            if self.render_ids.contains_key(&layer) {
+                self.render_ids.get_mut(&layer).expect("Render ids was none somehow").insert(id.clone());
             } else {
                 let mut layer_set = HashSet::new();
                 layer_set.insert(id.clone());
                 self.render_ids.insert(layer, layer_set);
             }
+            self.active_layers.push(layer);
+            self.active_layers.sort();
+            self.active_layers.dedup();
         }
     }
 
@@ -139,7 +146,7 @@ impl<T: Entity<T>> World<T> {
             tick_mut_ids.remove(&id);
         }
         let mut layer = 0;
-        if let Some(entity) = self.get_entity_by_id(id) {
+        if let Some(entity) = self.get_entity_by_id(id.clone()) {
             if let Some(renderable) = entity.get_renderable() {
                 layer = renderable.get_layer();
             }

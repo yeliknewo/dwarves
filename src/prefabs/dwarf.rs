@@ -10,7 +10,8 @@ pub fn new_dwarf(manager: &mut IdManager, tile_id: Id, world: &DWorld) -> DEntit
         Renderable::new(
             [1.0, 1.0, 1.0, 1.0],
             [0.0, 0.0, TILE_SIZE, TILE_SIZE],
-            (0.0, 0.0)
+            (0.0, 0.0),
+            DWARF_LAYER,
         )
     )
     .with_transform(

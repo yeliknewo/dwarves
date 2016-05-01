@@ -18,6 +18,7 @@ fn new_grass_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntit
             [0.0, 1.0, 0.0, 1.0],
             [0.0, 0.0, TILE_SIZE, TILE_SIZE],
             (x as f64 * TILE_SIZE, y as f64 * TILE_SIZE),
+            TILE_LAYER,
         )
     )
 }
@@ -29,6 +30,7 @@ fn new_stone_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntit
             [0.2, 0.2, 0.2, 1.0],
             [0.0, 0.0, TILE_SIZE, TILE_SIZE],
             (x as f64 * TILE_SIZE, y as f64 * TILE_SIZE),
+            TILE_LAYER,
         )
     )
 }
@@ -40,6 +42,7 @@ fn new_water_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntit
             [0.0, 0.0, 1.0, 1.0],
             [0.0, 0.0, TILE_SIZE, TILE_SIZE],
             (0.0, 0.0),
+            TILE_LAYER,
         )
     )
 }

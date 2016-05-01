@@ -1,7 +1,6 @@
 use lib_dwarves::*;
 
 use utils::*;
-use dwarves_entity::*;
 
 pub struct Dwarf {
     tile_id: Id,
@@ -19,7 +18,8 @@ impl Dwarf {
     }
 
     pub fn tick_mut(&mut self, my_id: Id, world: &mut DWorld, transform: &mut Box<Transform>) {
-
+        let coords = world.get_entity_by_id(self.tile_id.clone()).expect("Tile was none").get_coords().expect("Coords on tile was none");
+        let tile_id = world.get_entity_by_name(OVERSEER_NAME).expect("Overseer was none").get_tile_map().expect("Overseer had no tile map").get_split(coords.0 + 1, coords.1);
     }
 
     fn travel(&mut self, my_id: Id, target: Id, world: &mut DWorld, transform: &mut Transform) {
