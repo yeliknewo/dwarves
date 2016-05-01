@@ -23,6 +23,10 @@ impl Renderable {
         rectangle(self.color, self.size, c.transform.trans(self.location.0, self.location.1), g);
     }
 
+    pub fn set_color(&mut self, color: [f32; 4]) {
+        self.color = color;
+    }
+
     pub fn get_layer(&self) -> u8 {
         self.layer
     }

@@ -1,6 +1,9 @@
 use lib_dwarves::*;
 
 use utils::*;
+use components::*;
+
+
 
 #[inline]
 pub fn new_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize, tile_type: TileType) -> DEntity {
@@ -12,7 +15,7 @@ pub fn new_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize, tile_type: 
 }
 
 fn new_grass_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntity {
-    new_base_tile(manager, x, y)
+    new_base_tile(manager, x, y, true)
     .with_renderable(
         Renderable::new(
             [0.0, 1.0, 0.0, 1.0],
@@ -24,7 +27,7 @@ fn new_grass_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntit
 }
 
 fn new_stone_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntity {
-    new_base_tile(manager, x, y)
+    new_base_tile(manager, x, y, false)
     .with_renderable(
         Renderable::new(
             [0.2, 0.2, 0.2, 1.0],
@@ -36,7 +39,7 @@ fn new_stone_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntit
 }
 
 fn new_water_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntity {
-    new_base_tile(manager, x, y)
+    new_base_tile(manager, x, y, false)
     .with_renderable(
         Renderable::new(
             [0.0, 0.0, 1.0, 1.0],
@@ -47,9 +50,12 @@ fn new_water_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntit
     )
 }
 
-fn new_base_tile(manager: &mut IdManager, x: CoordSize, y:CoordSize) -> DEntity {
+fn new_base_tile(manager: &mut IdManager, x: CoordSize, y:CoordSize, has_food: bool) -> DEntity {
     let id = Id::new(manager);
     DEntity::new(id)
+    .with_tile(
+        Tile::new(has_food)
+    )
     .with_container(
         Container::new()
     )
@@ -63,6 +69,7 @@ fn new_base_tile(manager: &mut IdManager, x: CoordSize, y:CoordSize) -> DEntity 
     )
 }
 
+#[derive(Clone)]
 pub enum TileType {
     Grass,
     Stone,
