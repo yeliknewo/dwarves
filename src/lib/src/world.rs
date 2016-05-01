@@ -11,7 +11,8 @@ pub struct World<T: Entity<T>> {
     names: HashMap<&'static str, Id>,
     tick_ids: HashSet<Id>,
     tick_mut_ids: Option<HashSet<Id>>,
-    render_ids: HashSet<Id>,
+    render_ids: HashMap<u8, HashSet<Id>>,
+    active_layers: Vec<u8>,
 }
 
 impl<T: Entity<T>> World<T> {
@@ -22,7 +23,8 @@ impl<T: Entity<T>> World<T> {
             names: HashMap::new(),
             tick_ids: HashSet::new(),
             tick_mut_ids: Some(HashSet::new()),
-            render_ids: HashSet::new(),
+            render_ids: HashMap::new(),
+            active_layers: vec!(),
         }
     }
 
@@ -97,10 +99,15 @@ impl<T: Entity<T>> World<T> {
         let mut tick = false;
         let mut tick_mut = false;
         let mut render = false;
+        let mut layer = 0;
 
         if let Some(entity) = self.get_entity_by_id(id.clone()) {
             tick = entity.is_tick();
             tick_mut = entity.is_tick_mut();
+            if let Some(renderable) = entity.get_renderable() {
+                render = true;
+                layer = renderable.get_layer();
+            }
             render = entity.get_renderable().is_some();
         }
 
@@ -115,7 +122,13 @@ impl<T: Entity<T>> World<T> {
         }
 
         if render {
-            self.render_ids.insert(id.clone());
+            if let Some(layer_set) = self.render_ids.get_mut(&layer) {
+                layer_set.insert(id.clone());
+            } else {
+                let mut layer_set = HashSet::new();
+                layer_set.insert(id.clone());
+                self.render_ids.insert(layer, layer_set);
+            }
         }
     }
 
@@ -125,7 +138,15 @@ impl<T: Entity<T>> World<T> {
         if let Some(ref mut tick_mut_ids) = self.tick_mut_ids {
             tick_mut_ids.remove(&id);
         }
-        self.render_ids.remove(&id);
+        let mut layer = 0;
+        if let Some(entity) = self.get_entity_by_id(id) {
+            if let Some(renderable) = entity.get_renderable() {
+                layer = renderable.get_layer();
+            }
+        }
+        if let Some(layer_set) = self.render_ids.get_mut(&layer) {
+            layer_set.remove(&id);
+        }
     }
 
     #[inline]
@@ -140,7 +161,7 @@ impl<T: Entity<T>> World<T> {
     }
 
     #[inline]
-    pub fn get_render_ids(&self) -> &HashSet<Id> {
+    pub fn get_render_ids(&self) -> &HashMap<u8, HashSet<Id>> {
         &self.render_ids
     }
 

@@ -8,3 +8,5 @@ pub type Coords = (u32, u32);
 pub type CoordSize = u32;
 
 pub static OVERSEER_NAME: &'static str = "Overseer";
+
+pub const TILE_SIZE: f64 = 16.0;

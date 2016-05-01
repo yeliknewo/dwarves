@@ -8,8 +8,8 @@ mod utils;
 mod prefabs;
 mod components;
 
-use prefabs::{new_overseer, new_tile, TileType};
-use utils::{DEntity};
+use prefabs::*;
+use utils::*;
 
 fn main() {
     let title = "Dwarves";
@@ -37,9 +37,23 @@ fn main() {
             for y in 0..5 {
                 for x in 0..5 {
                     let tile = new_tile(&mut manager, x, y, TileType::Grass);
+                    {
+                        let mut overseer = world.get_mut_entity_by_id(overseer_id.clone()).expect("Overseer was none");
+                        let mut tile_map = overseer.get_mut_tile_map().expect("Overseer had no tile map");
+                        tile_map.insert_split(x, y, tile.get_id());
+                    }
                     world.add_entity(tile);
                 }
             }
+        }
+        let tile_id = {
+            let overseer = world.get_entity_by_id(overseer_id).expect("Overseer was none");
+            let tile_map = overseer.get_tile_map().expect("Tile map was none");
+            tile_map.get_split(1, 1).expect("Tile map was empty at 1, 1")
+        };
+        {
+            let dwarf = new_dwarf(&mut manager, tile_id, world);
+            world.add_entity(dwarf);
         }
     }
 

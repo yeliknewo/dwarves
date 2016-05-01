@@ -16,13 +16,13 @@ pub struct DwarvesEntity {
     dwarf: Option<Box<Dwarf>>,
 }
 
-impl_component_with_entity!(DwarvesEntity, renderable, Renderable, set_option_renderable, set_renderable, with_renderable, get_renderable, get_mut_renderable);
-impl_component_with_entity!(DwarvesEntity, transform, Transform, set_option_transform, set_transform, with_transform, get_transform, get_mut_transform);
-impl_component_with_entity!(DwarvesEntity, tile_map, TileMap, set_option_tile_map, set_tile_map, with_tile_map, get_tile_map, get_mut_tile_map);
-impl_component_with_entity!(DwarvesEntity, container, Container, set_option_container, set_container, with_container, get_container, get_mut_container);
-impl_component_with_entity!(DwarvesEntity, coords, Coords, set_option_coords, set_coords, with_coords, get_coords, get_mut_coords);
-impl_component_with_entity!(DwarvesEntity, name, Name, set_option_name, set_name, with_name, get_name, get_mut_name);
-impl_component_with_entity!(DwarvesEntity, dwarf, Dwarf, set_option_dwarf, set_dwarf, with_dwarf, get_dwarf, get_mut_dwarf);
+impl_component_with_entity!(DwarvesEntity, renderable, Renderable, set_option_renderable, set_renderable, with_renderable, get_renderable, get_mut_renderable, take_renderable);
+impl_component_with_entity!(DwarvesEntity, transform, Transform, set_option_transform, set_transform, with_transform, get_transform, get_mut_transform, take_transform);
+impl_component_with_entity!(DwarvesEntity, tile_map, TileMap, set_option_tile_map, set_tile_map, with_tile_map, get_tile_map, get_mut_tile_map, take_tile_map);
+impl_component_with_entity!(DwarvesEntity, container, Container, set_option_container, set_container, with_container, get_container, get_mut_container, take_container);
+impl_component_with_entity!(DwarvesEntity, coords, Coords, set_option_coords, set_coords, with_coords, get_coords, get_mut_coords, take_coords);
+impl_component_with_entity!(DwarvesEntity, name, Name, set_option_name, set_name, with_name, get_name, get_mut_name, take_name);
+impl_component_with_entity!(DwarvesEntity, dwarf, Dwarf, set_option_dwarf, set_dwarf, with_dwarf, get_dwarf, get_mut_dwarf, take_dwarf);
 
 impl DwarvesEntity {
     pub fn new(id: Id) -> DwarvesEntity {

@@ -18,7 +18,7 @@ pub trait Entity<T: Entity<T>> : Send + Sync {
 
 #[macro_export]
 macro_rules! impl_component_with_entity {
-    ($t: ident, $p: ident, $c: ident, $so: ident, $s: ident, $w: ident, $g: ident, $m: ident) => (
+    ($t: ident, $p: ident, $c: ident, $so: ident, $s: ident, $w: ident, $g: ident, $m: ident, $ta: ident) => (
         impl $t {
             #[inline]
             pub fn $so (&mut self, $p: Option<Box<$c>>) {
@@ -44,6 +44,11 @@ macro_rules! impl_component_with_entity {
             #[inline]
             pub fn $m (&mut self) -> Option<&mut Box<$c>> {
                 self.$p.as_mut()
+            }
+
+            #[inline]
+            pub fn $ta (&mut self) -> Option<Box<$c>> {
+                self.$p.take()
             }
         }
     )

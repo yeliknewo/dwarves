@@ -39,10 +39,12 @@ impl<T: Entity<T>> Game<T> {
             window.draw_2d(&e, |c, g| {
                 clear([0.0, 0.0, 0.0, 1.0], g);
                 let world = self.get_world();
-                for entity_id in world.get_render_ids() {
-                    if let Some(entity) = world.get_entity_by_id(entity_id.clone()) {
-                        if let Some(renderable) = entity.get_renderable() {
-                            renderable.draw_2d(c, g);
+                for layer_set in world.get_render_ids().values() {
+                    for entity_id in layer_set {
+                        if let Some(entity) = world.get_entity_by_id(entity_id.clone()) {
+                            if let Some(renderable) = entity.get_renderable() {
+                                renderable.draw_2d(c, g);
+                            }
                         }
                     }
                 }
