@@ -15,7 +15,7 @@ pub fn new_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize, tile_type: 
 }
 
 fn new_grass_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntity {
-    new_base_tile(manager, x, y, true)
+    new_base_tile(manager, x, y, true, true)
     .with_renderable(
         Renderable::new(
             [0.0, 1.0, 0.0, 1.0],
@@ -27,7 +27,7 @@ fn new_grass_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntit
 }
 
 fn new_stone_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntity {
-    new_base_tile(manager, x, y, false)
+    new_base_tile(manager, x, y, false, true)
     .with_renderable(
         Renderable::new(
             [0.2, 0.2, 0.2, 1.0],
@@ -39,22 +39,22 @@ fn new_stone_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntit
 }
 
 fn new_water_tile(manager: &mut IdManager, x: CoordSize, y: CoordSize) -> DEntity {
-    new_base_tile(manager, x, y, false)
+    new_base_tile(manager, x, y, false, false)
     .with_renderable(
         Renderable::new(
             [0.0, 0.0, 1.0, 1.0],
             [0.0, 0.0, TILE_SIZE, TILE_SIZE],
-            (0.0, 0.0),
+            (x as f64 * TILE_SIZE, y as f64 * TILE_SIZE),
             TILE_LAYER,
         )
     )
 }
 
-fn new_base_tile(manager: &mut IdManager, x: CoordSize, y:CoordSize, has_food: bool) -> DEntity {
+fn new_base_tile(manager: &mut IdManager, x: CoordSize, y:CoordSize, food: bool, walkable: bool) -> DEntity {
     let id = Id::new(manager);
     DEntity::new(id)
     .with_tile(
-        Tile::new(has_food)
+        Tile::new(food, walkable)
     )
     .with_container(
         Container::new()

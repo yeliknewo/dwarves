@@ -6,7 +6,7 @@ use lib_dwarves::*;
 
 use utils::*;
 
-const MOVE_OPTIONS: [(i32, i32); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
+const MOVE_OPTIONS: [(i32, i32); 8] = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1)];
 
 struct Changes {
     new_hunger: Option<f64>,
@@ -75,16 +75,18 @@ impl Dwarf {
                     }
                     new_coords
                 };
-                changes.target = world.get_entity_by_name(OVERSEER_NAME).expect("Overseer was none").get_tile_map().expect("Overseer had no tile map").get(new_coords).clone();
+                {
+                    if let Some(target_id) = world.get_entity_by_name(OVERSEER_NAME).expect("Overseer was none").get_tile_map().expect("Overseer had no tile map").get(new_coords) {
+                        if world.get_entity_by_id(target_id.clone()).expect("Target id was none").get_tile().expect("Target tile had no tile").is_walkable() {
+                            changes.target = Some(target_id);
+                        }
+                    }
+                }
             }
         }
     }
 
     pub fn tick_mut(&mut self, my_id: Id, world: &mut DWorld, transform: &mut Box<Transform>, renderable: &mut Box<Renderable>) {
-        // let coords = world.get_entity_by_id(self.tile_id.clone()).expect("Tile was none").get_coords().expect("Coords on tile was none").clone();
-        // if let Some(tile_id) = world.get_entity_by_name(OVERSEER_NAME).expect("Overseer was none").get_tile_map().expect("Overseer had no tile map").get_split(coords.0 + 1, coords.1).clone() {
-        //     self.travel(my_id, tile_id, world, transform, renderable);
-        // }
         let target = {
             let mut changes = self.changes.write().expect("Poisoned Changes");
             if let Some(new_hunger) = changes.new_hunger.take() {

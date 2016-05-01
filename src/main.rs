@@ -14,7 +14,7 @@ use utils::*;
 
 use rand::Rng;
 
-pub const TILE_TYPE_ARRAY: [TileType; 3] = [TileType::Grass, TileType::Stone, TileType::Grass];
+pub const TILE_TYPE_ARRAY: [TileType; 3] = [TileType::Grass, TileType::Stone, TileType::Water];
 
 fn main() {
     let title = "Dwarves";
@@ -53,7 +53,7 @@ fn main() {
                 }
             }
         }
-        let dwarf_count = 5;
+        let dwarf_count = 20;
         for i in 0..dwarf_count {
             let tile_id = {
                 let overseer = world.get_entity_by_id(overseer_id.clone()).expect("Overseer was none");

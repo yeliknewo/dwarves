@@ -1,19 +1,25 @@
 pub struct Tile {
-    has_food: bool,
+    food: bool,
+    walkable: bool,
 }
 
 impl Tile {
-    pub fn new(has_food: bool) -> Tile {
+    pub fn new(food: bool, walkable: bool) -> Tile {
         Tile {
-            has_food: has_food,
+            food: food,
+            walkable: walkable,
         }
     }
 
+    pub fn is_walkable(&self) -> bool {
+        self.walkable
+    }
+
     pub fn has_food(&self) -> bool {
-        self.has_food
+        self.food
     }
 
     pub fn set_food(&mut self, food: bool) {
-        self.has_food = food;
+        self.food = food;
     }
 }
