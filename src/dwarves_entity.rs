@@ -16,6 +16,7 @@ pub struct DwarvesEntity {
     dwarf: Option<Box<Dwarf>>,
     tile: Option<Box<Tile>>,
     item: Option<Box<Item>>,
+    job: Option<Box<Job>>,
 }
 
 impl_component_with_entity!(DwarvesEntity, renderable, Renderable, set_option_renderable, set_renderable, with_renderable, get_renderable, get_mut_renderable, take_renderable, give_renderable);
@@ -27,6 +28,7 @@ impl_component_with_entity!(DwarvesEntity, name, Name, set_option_name, set_name
 impl_component_with_entity!(DwarvesEntity, dwarf, Dwarf, set_option_dwarf, set_dwarf, with_dwarf, get_dwarf, get_mut_dwarf, take_dwarf, give_dwarf);
 impl_component_with_entity!(DwarvesEntity, tile, Tile, set_option_tile, set_tile, with_tile, get_tile, get_mut_tile, take_tile, give_tile);
 impl_component_with_entity!(DwarvesEntity, item, Item, set_option_item, set_item, with_item, get_item, get_mut_item, take_item, give_item);
+impl_component_box_with_entity!(DwarvesEntity, job, Box<Job>, set_option_job, set_job, with_job, get_job, get_mut_job, take_job, give_job);
 
 impl DwarvesEntity {
     pub fn new(id: Id) -> DwarvesEntity {
@@ -41,6 +43,7 @@ impl DwarvesEntity {
             dwarf: None,
             tile: None,
             item: None,
+            job: None,
         }
     }
 }
@@ -49,32 +52,38 @@ impl Entity<DwarvesEntity> for DwarvesEntity {
     impl_entity!(id, renderable, transform);
 
     fn tick(&self, dt: f64, world: Arc<DWorld>) {
-        if let Some(ref dwarf) = self.dwarf {
-            dwarf.tick(dt, world);
+        if let Some(job) = self.job.as_ref() {
+            job.tick(dt, world);
         }
+        // if let Some(ref dwarf) = self.dwarf {
+        //     dwarf.tick(dt, world);
+        // }
     }
 
     fn tick_mut(&mut self, manager: &mut IdManager, world: &mut DWorld) {
-        if self.dwarf.is_some() {
-            let mut transform = self.take_transform().expect("Dwarf didn't have transform");
-            let mut renderable = self.take_renderable().expect("Dwarf didn't have renderable");
-            let id = self.get_id().clone();
-            self.get_mut_dwarf().expect("Dwarf wasn't a dwarf?").tick_mut(id, world, &mut transform, &mut renderable);
-            self.give_transform(transform);
-            self.give_renderable(renderable);
+        if let Some(job) = self.job.as_mut() {
+            job.tick_mut(manager, world);
         }
+        // if self.dwarf.is_some() {
+        //     let mut transform = self.take_transform().expect("Dwarf didn't have transform");
+        //     let mut renderable = self.take_renderable().expect("Dwarf didn't have renderable");
+        //     let id = self.get_id().clone();
+        //     self.get_mut_dwarf().expect("Dwarf wasn't a dwarf?").tick_mut(id, world, &mut transform, &mut renderable);
+        //     self.give_transform(transform);
+        //     self.give_renderable(renderable);
+        // }
     }
 
     fn is_tick(&self) -> bool {
-        match self.dwarf.as_ref() {
-            Some(dwarf) => dwarf.is_tick(),
+        match self.job.as_ref() {
+            Some(c) => c.is_tick(),
             None => false,
         }
     }
 
     fn is_tick_mut(&self) -> bool {
-        match self.dwarf.as_ref() {
-            Some(dwarf) => dwarf.is_tick_mut(),
+        match self.job.as_ref() {
+            Some(c) => c.is_tick_mut(),
             None => false,
         }
     }

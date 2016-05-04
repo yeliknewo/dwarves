@@ -17,8 +17,51 @@ pub trait Entity<T: Entity<T>> : Send + Sync {
 }
 
 #[macro_export]
+macro_rules! impl_component_box_with_entity {
+    ($t: ty, $p: ident, $c: ty, $so: ident, $s: ident, $w: ident, $g: ident, $m: ident, $ta: ident, $gi: ident) => (
+        impl $t {
+            #[inline]
+            pub fn $so (&mut self, $p: Option<$c>) {
+                self.$p = $p;
+            }
+
+            #[inline]
+            pub fn $s (&mut self, $p: $c) {
+                self.$so(Some($p));
+            }
+
+            #[inline]
+            pub fn $w (mut self, $p: $c) -> $t {
+                self.$s($p);
+                self
+            }
+
+            #[inline]
+            pub fn $g (&self) -> Option<&$c> {
+                self.$p.as_ref()
+            }
+
+            #[inline]
+            pub fn $m (&mut self) -> Option<&mut $c> {
+                self.$p.as_mut()
+            }
+
+            #[inline]
+            pub fn $ta (&mut self) -> Option<$c> {
+                self.$p.take()
+            }
+
+            #[inline]
+            pub fn $gi (&mut self, $p: $c) {
+                self.$p = Some($p);
+            }
+        }
+    )
+}
+
+#[macro_export]
 macro_rules! impl_component_with_entity {
-    ($t: ty, $p: ident, $c: ident, $so: ident, $s: ident, $w: ident, $g: ident, $m: ident, $ta: ident, $gi: ident) => (
+    ($t: ty, $p: ident, $c: ty, $so: ident, $s: ident, $w: ident, $g: ident, $m: ident, $ta: ident, $gi: ident) => (
         impl $t {
             #[inline]
             pub fn $so (&mut self, $p: Option<Box<$c>>) {
