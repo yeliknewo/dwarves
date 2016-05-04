@@ -6,7 +6,16 @@ use lib_dwarves::*;
 
 use utils::*;
 
-const MOVE_OPTIONS: [(i32, i32); 8] = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1)];
+const MOVE_OPTIONS: [(i32, i32); 8] = [
+    (-1, 0),
+    (1, 0),
+    (0, -1),
+    (0, 1),
+    (-1, -1),
+    (1, -1),
+    (-1, 1),
+    (1, 1)
+];
 
 struct Changes {
     new_hunger: Option<f64>,
@@ -35,6 +44,8 @@ pub struct Dwarf {
     changes: Arc<RwLock<Changes>>,
 }
 
+impl_component!(Dwarf, true, true);
+
 impl Dwarf {
     pub fn new(tile_id: Id) -> Dwarf {
         Dwarf {
@@ -53,30 +64,37 @@ impl Dwarf {
             changes.new_hunger = Some((self.hunger - dt).max(0.0));
         }
         if self.hunger < self.hunger_threshhold {
+            for entity in world.get_entity_by_id(self.tile_id.clone()).expect("Current tile was none").get_container().expect("Tile had no container").get_ids().iter() {
+                if let Some(item) = entity.get_item() {
+                    if item.is_edible() {
+                        changes.should_eat = true;
+                    }
+                }
+            }
             if world.get_entity_by_id(self.tile_id.clone()).expect("Current Tile was none").get_tile().expect("Tile had no tile").has_food() {
                 changes.should_eat = true;
             } else {
                 let coords = world.get_entity_by_id(self.tile_id.clone()).expect("Tile was none").get_coords().expect("Coords on tile was none").clone();
                 let new_coords = {
-                    let mut new_coords = (coords.0, coords.1);
+                    let mut new_coords = coords;
                     let mut rng = rand::thread_rng();
                     let delta_coords = rng.choose(&MOVE_OPTIONS).expect("choose bullshit rng stuff").clone();
                     {
-                        let temp_x = delta_coords.0 + new_coords.0 as i32;
+                        let temp_x = delta_coords.0 + new_coords.get_x() as i32;
                         if temp_x >= 0 {
-                            new_coords.0 = temp_x as u32;
+                            new_coords.set_x(temp_x as u32);
                         }
                     }
                     {
-                        let temp_y = delta_coords.1 + new_coords.1 as i32;
+                        let temp_y = delta_coords.1 + new_coords.get_y() as i32;
                         if temp_y >= 0 {
-                            new_coords.1 = temp_y as u32;
+                            new_coords.set_y(temp_y as u32);
                         }
                     }
                     new_coords
                 };
                 {
-                    if let Some(target_id) = world.get_entity_by_name(OVERSEER_NAME).expect("Overseer was none").get_tile_map().expect("Overseer had no tile map").get(new_coords) {
+                    if let Some(target_id) = world.get_entity_by_name(OVERSEER_NAME).expect("Overseer was none").get_tile_map().expect("Overseer had no tile map").get(&new_coords) {
                         if world.get_entity_by_id(target_id.clone()).expect("Target id was none").get_tile().expect("Target tile had no tile").is_walkable() {
                             changes.target = Some(target_id);
                         }
@@ -117,7 +135,7 @@ impl Dwarf {
             tile.get_mut_container().expect("Target wasn't a container").add_id(my_id.clone());
             tile.get_coords().expect("Target wasn't a coords").clone()
         };
-        transform.set_location((location.0 as f64 * 16.0, location.1 as f64 * 16.0));
+        transform.set_location((location.get_x() as f64 * 16.0, location.get_y() as f64 * 16.0));
         renderable.update(transform);
     }
 }

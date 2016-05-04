@@ -15,6 +15,7 @@ pub struct DwarvesEntity {
     name: Option<Box<Name>>,
     dwarf: Option<Box<Dwarf>>,
     tile: Option<Box<Tile>>,
+    item: Option<Box<Item>>,
 }
 
 impl_component_with_entity!(DwarvesEntity, renderable, Renderable, set_option_renderable, set_renderable, with_renderable, get_renderable, get_mut_renderable, take_renderable, give_renderable);
@@ -25,6 +26,7 @@ impl_component_with_entity!(DwarvesEntity, coords, Coords, set_option_coords, se
 impl_component_with_entity!(DwarvesEntity, name, Name, set_option_name, set_name, with_name, get_name, get_mut_name, take_name, give_name);
 impl_component_with_entity!(DwarvesEntity, dwarf, Dwarf, set_option_dwarf, set_dwarf, with_dwarf, get_dwarf, get_mut_dwarf, take_dwarf, give_dwarf);
 impl_component_with_entity!(DwarvesEntity, tile, Tile, set_option_tile, set_tile, with_tile, get_tile, get_mut_tile, take_tile, give_tile);
+impl_component_with_entity!(DwarvesEntity, item, Item, set_option_item, set_item, with_item, get_item, get_mut_item, take_item, give_item);
 
 impl DwarvesEntity {
     pub fn new(id: Id) -> DwarvesEntity {
@@ -38,12 +40,13 @@ impl DwarvesEntity {
             name: None,
             dwarf: None,
             tile: None,
+            item: None,
         }
     }
 }
 
 impl Entity<DwarvesEntity> for DwarvesEntity {
-    impl_entity!(DwarvesEntity, id, renderable, transform);
+    impl_entity!(id, renderable, transform);
 
     fn tick(&self, dt: f64, world: Arc<DWorld>) {
         if let Some(ref dwarf) = self.dwarf {
@@ -63,10 +66,16 @@ impl Entity<DwarvesEntity> for DwarvesEntity {
     }
 
     fn is_tick(&self) -> bool {
-        self.dwarf.is_some()
+        match self.dwarf.as_ref() {
+            Some(dwarf) => dwarf.is_tick(),
+            None => false,
+        }
     }
 
     fn is_tick_mut(&self) -> bool {
-        self.dwarf.is_some()
+        match self.dwarf.as_ref() {
+            Some(dwarf) => dwarf.is_tick_mut(),
+            None => false,
+        }
     }
 }

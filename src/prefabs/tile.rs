@@ -54,7 +54,7 @@ fn new_base_tile(manager: &mut IdManager, x: CoordSize, y:CoordSize, food: bool,
     let id = Id::new(manager);
     DEntity::new(id)
     .with_tile(
-        Tile::new(food, walkable)
+        Tile::new(walkable)
     )
     .with_container(
         Container::new()
@@ -65,7 +65,7 @@ fn new_base_tile(manager: &mut IdManager, x: CoordSize, y:CoordSize, food: bool,
         )
     )
     .with_coords(
-        (x, y)
+        Coords::new(x, y)
     )
 }
 

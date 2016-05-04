@@ -9,6 +9,8 @@ pub struct Renderable {
     layer: u8,
 }
 
+impl_component!(Renderable, false, false);
+
 impl Renderable {
     pub fn new(color: [f32;4], size: [f64; 4], location: (f64, f64), layer: u8) -> Renderable {
         Renderable {

@@ -2,6 +2,8 @@ pub struct Transform {
     location: (f64, f64),
 }
 
+impl_component!(Transform, false, false);
+
 impl Transform {
     pub fn new_default() -> Transform {
         Transform::new((0.0, 0.0))

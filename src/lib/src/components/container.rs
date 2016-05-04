@@ -4,6 +4,8 @@ pub struct Container {
     ids: Vec<Id>,
 }
 
+impl_component!(Container, false, false);
+
 impl Container {
     pub fn new() -> Container {
         Container {
